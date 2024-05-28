@@ -3,7 +3,7 @@ from unidecode import unidecode
 import pandas as pd
 
 class ProcessamentoScraper(ScraperBase):
-    def __init__(self, anos=range(2020, 2024), botao=None):
+    def __init__(self, anos=range(1970, 2022), botao=None):
         url = 'http://vitibrasil.cnpuv.embrapa.br/index.php?opcao=opt_03'  # Definindo a URL como um atributo de classe
         self.csv_url = ['http://vitibrasil.cnpuv.embrapa.br/download/ProcessaViniferas.csv',
                         'http://vitibrasil.cnpuv.embrapa.br/download/ProcessaAmericanas.csv',

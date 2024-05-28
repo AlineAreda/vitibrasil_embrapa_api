@@ -11,15 +11,15 @@ tags_metadata = [
     },
     {
         "name": "Produção",
-        "description": "Endpoints relacionados à produção de vinhos, sucos e derivados do Rio Grande do Sul",
+        "description": "Endpoints relacionados à produção de vinhos, sucos e derivados.",
     },
     {
         "name": "Processamento",
-        "description": "Endpoints relacionados à quantidade de uvas processadas no Rio Grande do Sul",
+        "description": "Endpoints relacionados à quantidade de uvas processadas.",
     },
     {
         "name": "Comercialização",
-        "description": "Endpoints relacionados à comercialização de vinhos e derivados no Rio Grande do Sul",
+        "description": "Endpoints relacionados à comercialização de vinhos e derivados.",
     },
     {
         "name": "Importação",
@@ -31,13 +31,13 @@ tags_metadata = [
     },
     {   
         "name": "Página Inicial",
-        "description": "Bem vindo à API da Vitivinicultura ",
+        "description": "Banco de dados de uva, vinho e derivados",
     }
 ]
 
 app = FastAPI(
-    title="API de Dados de Vinhos - EMBRAPA",
-    description="API para retornar dados sobre a vitivinicultura disponíveis no site [Embrapa Uva e Vinho](http://vitibrasil.cnpuv.embrapa.br/index.php?opcao=opt_01).",
+    title="API  Vitivinicultura- Dados de uva, vinho e derivados.",
+    description="API para obter dados de uva, vinho e derivados do site [Embrapa Uva e Vinho](http://vitibrasil.cnpuv.embrapa.br/index.php?opcao=opt_01).",
     version="0.0.1",
     openapi_tags=tags_metadata,
 )
@@ -48,7 +48,7 @@ app = FastAPI(
         summary='Página Inicial', 
         description='Página Inicial')
 def root():
-    return {"message": "Essa é a página inicial do app"}
+    return {"message": "Banco de dados de uva, vinho e derivados"}
 
 @app.post("/token", 
         response_model=dict, 
@@ -77,7 +77,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 async def read_users_me(current_user = Depends(get_current_active_user)):
     return current_user
 
-app.include_router(router)
+app.include_router(router, prefix="/vitibrasil/api/v1" )
 
 if __name__ == "__main__":
     import uvicorn

@@ -115,7 +115,7 @@ def transform_csv(csv, tipo):
         csv_df[column_name] = csv_df[column_name].apply(remover_acentos)
 
         df_melted = pd.melt(csv_df, id_vars=[column_name], var_name='Ano', value_name='Quantidade')
-        df_melted['Valor (US$)'] = None # Não possui essa coluna no CSV, porém no site consta essa coluna. Para padronização trouxe como None
+        df_melted['Valor (US$)'] = None 
         df_melted = df_melted[[column_name, 'Ano', 'Quantidade', 'Valor (US$)']]
         df_melted['Ano'] = df_melted['Ano'].str.split('.').str[0].astype(int)
         return df_melted

@@ -3,10 +3,10 @@ from unidecode import unidecode
 import pandas as pd
 
 class ComercializacaoScraper(ScraperBase):
-    def __init__(self, anos=range(2020, 2024), botao=None):
-        url = 'http://vitibrasil.cnpuv.embrapa.br/index.php?opcao=opt_04'  # Definindo a URL como um atributo de classe
+    def __init__(self, anos=range(1970, 2023), botao=None):
+        url = 'http://vitibrasil.cnpuv.embrapa.br/index.php?opcao=opt_04'
         self.csv_url = ['http://vitibrasil.cnpuv.embrapa.br/download/Comercio.csv']
-        self.tipo = 'Comerc' # tipo do site Comercio
+        self.tipo = 'Comerc' # tipo page Comercio
         super().__init__(url, anos)
         self.botao = botao
 
@@ -50,5 +50,5 @@ class ComercializacaoScraper(ScraperBase):
     
 
     def run(self):
-        super().run()  # Chama o método run da classe base
-        self.transform_data()  # Aplica as transformações nos dados
+        super().run() 
+        self.transform_data() 

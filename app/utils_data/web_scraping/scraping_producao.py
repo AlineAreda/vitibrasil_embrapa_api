@@ -4,7 +4,7 @@ import pandas as pd
 
 
 class ProducaoScraper(ScraperBase):
-    def __init__(self, anos=range(2020, 2023), botao=None):
+    def __init__(self, anos=range(1970, 2023), botao=None):
         url = 'http://vitibrasil.cnpuv.embrapa.br/index.php?opcao=opt_02'  # Definindo a URL como um atributo de classe
         self.csv_url = ['http://vitibrasil.cnpuv.embrapa.br/download/Producao.csv']
         self.tipo = 'Prod'
