@@ -6,6 +6,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 
+
 import os
 from dotenv import load_dotenv
 
@@ -23,22 +24,15 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # Banco de dados fictício de usuários
+
 fake_users_db = {
-    "exemplo_usuario": {
-        "username": "exemplo_usuario",
-        "full_name": "Exemplo Usuário",
-        "email": "exemplo@usuario.com",
-        "hashed_password": pwd_context.hash("senha"),
+    "usuario": {
+        "username": "usuario",
+        "full_name": "Usuário",
+        "email": "user@email.com",
+        "hashed_password": pwd_context.hash("teste"),
         "disabled": False,
-        "permissions": ["GET:/producao-data", "GET:/processamento-data"]  # Permissões do usuário
-    },
-    "outro_usuario": {
-        "username": "outro_usuario",
-        "full_name": "Outro Usuário",
-        "email": "outro@usuario.com",
-        "hashed_password": pwd_context.hash("outra_senha"),
-        "disabled": False,
-        "permissions": ["GET:/importacao-data", "GET:/exportacao-data"]  # Permissões do usuário
+        "permissions": ["GET:/producao", "GET:/processamento"]  # Permissões do usuário
     },
     "admin": {
         "username": "admin",
@@ -47,7 +41,7 @@ fake_users_db = {
         "hashed_password": pwd_context.hash("admin"),
         "disabled": False,
         "permissions": [],
-        "is_admin": True  # Indica que este usuário é um administrador
+        "is_admin": True  # Usuário é um administrador
     }
 }
 
