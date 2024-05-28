@@ -5,22 +5,54 @@ from unidecode import unidecode
 
 class ScraperBase:
     def __init__(self, url, anos):
+        """
+        Inicializa o ScraperBase com a URL e os anos de interesse.
+
+        :param url: URL base para a raspagem de dados.
+        :param anos: Intervalo de anos para obter os dados.
+        """
         self.url = url
         self.anos = anos
         self.dados = pd.DataFrame()
 
     def fetch_data(self, url, params):
+        """
+        Faz uma requisição GET para a URL fornecida com os parâmetros especificados.
+
+        :param url: URL para fazer a requisição.
+        :param params: Parâmetros para a requisição.
+        :return: Conteúdo da resposta.
+        """
         response = requests.get(url, params=params)
         response.raise_for_status()
         return response.content
 
     def parse_html(self, html):
+        """
+        Analisa o conteúdo HTML e retorna um objeto BeautifulSoup.
+
+        :param html: Conteúdo HTML para analisar.
+        :return: Objeto BeautifulSoup.
+        """
         return BeautifulSoup(html, 'html.parser')
 
     def extract_table(self, soup):
+        """
+        Extrai a tabela HTML contendo os dados de interesse.
+
+        :param soup: Objeto BeautifulSoup para buscar a tabela.
+        :return: Objeto de tabela HTML ou None se não for encontrada.
+        """
         return soup.find('table', class_='tb_base tb_dados')
 
     def extract_data(self, table, classificacao_botao=''):
+        """
+        Extrai os dados da tabela HTML e retorna um DataFrame.
+
+        :param table: Objeto de tabela HTML contendo os dados.
+        :param classificacao_botao: Classificação opcional para adicionar aos dados.
+        :return: DataFrame contendo os dados extraídos.
+        """
         headers = [header.text.strip() for header in table.find_all('th')]
         headers.append('Classificação')
         if classificacao_botao:
@@ -30,7 +62,7 @@ class ScraperBase:
         penultimo_tb_item = ''
         rows = []
 
-        tfoot = table.find('tfoot', class_='tb_total') #Verificando se é o TOTAL
+        tfoot = table.find('tfoot', class_='tb_total')
 
         for row in table.find_all('tr')[1:]:
             cells = row.find_all('td')
@@ -53,6 +85,10 @@ class ScraperBase:
         return pd.DataFrame(rows, columns=headers)
 
     def run(self):
+        """
+        Executa o processo de raspagem para os anos especificados, 
+        incluindo o download, parsing, extração e transformação dos dados.
+        """
         for ano in self.anos:
             botao_iteravel = self.get_botoes()
             if botao_iteravel:
@@ -82,16 +118,31 @@ class ScraperBase:
         self.transform_data()
 
     def get_params(self, ano, botao=None):
+        """
+        Método abstrato para obter os parâmetros de requisição para um determinado ano e botão.
+
+        :param ano: Ano para o qual obter os parâmetros.
+        :param botao: Botão opcional para incluir nos parâmetros.
+        :return: Dicionário de parâmetros de requisição.
+        """
         raise NotImplementedError
 
     def get_botoes(self):
+        """
+        Método abstrato para obter a lista de botões a serem iterados durante a raspagem.
+
+        :return: Lista de botões.
+        """
         raise NotImplementedError
     
     def transform_data(self):
-        # Remover acentuação e caracteres especiais e converter para maiúsculas
+        """
+        Transforma os dados raspados aplicando normalização de texto e remoção de caracteres especiais.
+        """
+
         def normalize_text(text):
             if isinstance(text, str):
-                # Substituir "-" ou "*" por 0 e depois aplicar a normalização
+
                 if text.strip() == "-" or text.strip()=="*":
                     return "0"
                 else:
@@ -99,6 +150,6 @@ class ScraperBase:
             else:
                 return text
 
-        # Aplicar normalização a todas as colunas de texto
+
         for col in self.dados.select_dtypes(include='object'):
             self.dados[col] = self.dados[col].map(normalize_text)

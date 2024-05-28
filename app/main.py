@@ -48,7 +48,14 @@ app = FastAPI(
         summary='Página Inicial', 
         description='Health-check da API')
 def root():
+    """
+    Endpoint de verificação de saúde da API.
+
+    :return: Mensagem indicando que a API está funcionando.
+    """
     return {"message": "Banco de dados de uva, vinho e derivados"}
+
+
 
 @app.post("/token", 
         response_model=dict, 
@@ -57,6 +64,12 @@ def root():
         description='Gera um token JWT para autenticação'
         )
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+    """
+    Autentica o usuário e gera um token JWT.
+
+    :param form_data: Dados do formulário de autenticação.
+    :return: Token de acesso JWT e tipo de token.
+    """
     user = authenticate_user(users_db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -70,11 +83,19 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
+
+
 @app.get("/users/me", response_model=dict, 
         tags=["Auth"], 
         summary='Informações do usuário autenticado', 
         description='Retorna as informações do usuário baseado no token JWT')
 async def read_users_me(current_user = Depends(get_current_active_user)):
+    """
+    Retorna as informações do usuário autenticado com base no token JWT.
+
+    :param current_user: Usuário atual autenticado.
+    :return: Informações do usuário autenticado.
+    """
     return current_user
 
 

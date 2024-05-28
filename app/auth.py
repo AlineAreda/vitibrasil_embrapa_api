@@ -41,28 +41,57 @@ users_db = {
         "hashed_password": pwd_context.hash("admin"),
         "disabled": False,
         "permissions": [],
-        "is_admin": True  # Usuário é um administrador
+        "is_admin": True
     }
 }
 
-# Modelos
+
 class TokenData(BaseModel):
+    """Modelo para os dados do token"""
     username: Optional[str] = None
 
-# Utilitários para manipulação de senhas
+
 def verify_password(plain_password, hashed_password):
+    """
+    Verifica se a senha fornecida corresponde à senha hash armazenada.
+
+    :param plain_password: Senha fornecida pelo usuário.
+    :param hashed_password: Senha hash armazenada.
+    :return: True se a senha corresponder, False caso contrário.
+    """
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
+    """
+    Gera um hash para a senha fornecida.
+
+    :param password: Senha a ser hasheada.
+    :return: Hash da senha.
+    """
     return pwd_context.hash(password)
 
-# Utilitários para manipulação de usuários
+
 def get_user(db, username: str):
+    """
+    Obtém um usuário do banco de dados fictício.
+
+    :param db: Banco de dados fictício.
+    :param username: Nome de usuário.
+    :return: Dicionário do usuário ou None se o usuário não for encontrado.
+    """
     if username in db:
         user_dict = db[username]
         return user_dict
 
 def authenticate_user(fake_db, username: str, password: str):
+    """
+    Autentica um usuário verificando suas credenciais.
+
+    :param fake_db: Banco de dados fictício.
+    :param username: Nome de usuário.
+    :param password: Senha do usuário.
+    :return: Dicionário do usuário autenticado ou False se a autenticação falhar.
+    """
     user = get_user(fake_db, username)
     if not user:
         return False
@@ -70,8 +99,15 @@ def authenticate_user(fake_db, username: str, password: str):
         return False
     return user
 
-# Função para criar um token de acesso
+
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    """
+    Cria um token JWT para o usuário.
+
+    :param data: Dados a serem codificados no token.
+    :param expires_delta: Tempo de expiração do token.
+    :return: Token JWT codificado.
+    """
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -81,8 +117,15 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-# Dependência para obter o usuário atual
+
 async def get_current_user(token: str = Depends(oauth2_scheme)):
+    """
+    Obtém o usuário atual a partir do token JWT.
+
+    :param token: Token JWT.
+    :return: Dicionário do usuário atual.
+    :raises HTTPException: Se o token for inválido ou o usuário não for encontrado.
+    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Não autorizado",
@@ -102,25 +145,54 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     return user
 
 def check_permissions(user_permissions: List[str], method: str, path: str) -> bool:
+    """
+    Verifica se o usuário tem permissões para acessar o endpoint.
+
+    :param user_permissions: Lista de permissões do usuário.
+    :param method: Método HTTP da requisição.
+    :param path: Caminho do endpoint.
+    :return: True se o usuário tiver permissão, False caso contrário.
+    """
     required_permission = f"{method}:{path}"
     return required_permission in user_permissions
 
-# Dependência para obter o usuário ativo atual
+
 async def get_current_active_user(current_user = Depends(get_current_user)):
+    """
+    Obtém o usuário ativo atual.
+
+    :param current_user: Dicionário do usuário atual.
+    :return: Dicionário do usuário ativo.
+    :raises HTTPException: Se o usuário estiver desativado.
+    """
     if current_user.get("disabled"):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Usuário não encontrado")
     return current_user
 
-# Função para autorizar o usuário
+
 def authorize_user(user, method, path):
+    """
+    Autoriza o usuário para acessar um endpoint específico.
+
+    :param user: Dicionário do usuário.
+    :param method: Método HTTP da requisição.
+    :param path: Caminho do endpoint.
+    :raises HTTPException: Se o usuário não tiver permissão para acessar o endpoint.
+    """
     if user.get("is_admin"):
-        return  # Se o usuário for administrador, conceda acesso total
+        return
     if not check_permissions(user["permissions"], method, path):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Usuário sem permissão"
         )
 
-# Função para verificar se o usuário é administrador
+
 def is_admin_user(user):
+    """
+    Verifica se o usuário é administrador.
+
+    :param user: Dicionário do usuário.
+    :return: True se o usuário for administrador, False caso contrário.
+    """
     return user.get("is_admin", False)

@@ -4,35 +4,48 @@ from io import StringIO
 
 from app.utils_data.csv.transform_csv import transform_csv
 
-# Verificar qual delimitador é em cada CSV
+
 def infer_delimiter(text):
+    """
+    Infere o delimitador de um texto CSV.
+
+    :param text: Texto do CSV.
+    :return: Delimitador inferido.
+    """
     delimiters = [';', '\t', ',']
     for delimiter in delimiters:
         sample = text.splitlines()[0]
         if delimiter in sample:
             return delimiter
-    return ','  # Default delimiter
+    return ','
 
-# Download e tratamento do CSV
+
 def download_and_process_csv(csv_urls, tipo):
+    """
+    Faz o download e processa os arquivos CSV fornecidos.
+
+    :param csv_urls: Lista de URLs dos arquivos CSV.
+    :param tipo: Tipo de dados a serem processados.
+    :return: DataFrame combinado com os dados processados.
+    """
     dataframes = []
 
     for csv_url in csv_urls:
         print('Pegando o csv do site: ' + csv_url)
         response = requests.get(csv_url)
-        response.raise_for_status()  # Vai levantar um erro se o download falhar
+        response.raise_for_status()
         csv_data = StringIO(response.text)
 
-        # Inferir o delimitador
+
         first_line = response.text.split('\n', 1)[0]
         delimiter = infer_delimiter(first_line)
 
-        # Ler o CSV com o delimitador inferido
+
         df = pd.read_csv(csv_data, delimiter=delimiter, encoding='utf-8')
 
         formated = transform_csv(df, tipo)
         
-        #Verificar qual é o CSV e classificá-lo se houver botões no site 
+
         if tipo == 'Proces': 
             if csv_url.endswith("ProcessaViniferas.csv"):
                 formated['Botao'] = 'VINIFERAS'

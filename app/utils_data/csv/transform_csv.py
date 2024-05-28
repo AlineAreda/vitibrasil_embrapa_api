@@ -1,12 +1,22 @@
 import pandas as pd
 from unidecode import unidecode
 
-# Função para remover acentuação de uma coluna
 def remover_acentos(text):
     return unidecode(text)
+    """
+    Remove acentuação de um texto.
+    
+    :param text: Texto para remover acentuação.
+    :return: Texto sem acentuação.
+    """
 
-# Função para remover caracteres especiais (tentei de diversas formas de encoding no csv, porém sem sucesso)
 def fix_characters(text):
+    """
+    Remove caracteres especiais de um texto e substitui por caracteres corretos.
+    
+    :param text: Texto para corrigir caracteres especiais.
+    :return: Texto com caracteres especiais corrigidos.
+    """
     replacements = {
         'Ã¡': 'Á', 'Ã©': 'É', 'Ã­': 'Í', 'Ã³': 'Ó', 'Ãº': 'Ú', 'Ã ': 'À', 'Ã¢': 'Â', 'Ã£': 'Ã',
         'Ã§': 'Ç', 'Ãª': 'Ê', 'Ã«': 'Ë', 'Ã¬': 'Ì', 'Ã®': 'Î', 'Ã¯': 'Ï', 'Ã´': 'Ô', 'Ã¶': 'Ö',
@@ -21,9 +31,25 @@ def fix_characters(text):
         text = text.replace(key, value)
     return text
 
-# Função para padronizar os dados em relação ao Web Scraping
+
 def transform_csv(csv, tipo):
+    """
+    Padroniza e transforma os dados de um DataFrame CSV de acordo com o tipo especificado.
+
+    :param csv: DataFrame CSV a ser transformado.
+    :param tipo: Tipo de dados a ser transformado ('Prod', 'Proces', 'Comerc', 'Imp', 'Exp').
+    :return: DataFrame transformado.
+    """
     def common_transformations(csv_df, column_mapping, control_transform, id_vars):
+        """
+        Aplica transformações comuns aos dados do DataFrame CSV.
+
+        :param csv_df: DataFrame CSV a ser transformado.
+        :param column_mapping: Mapeamento das colunas para renomear.
+        :param control_transform: Função de transformação aplicada à coluna 'control'.
+        :param id_vars: Variáveis de identificação para manter durante a transformação.
+        :return: DataFrame transformado e remodelado.
+        """
         csv_df = csv_df.drop(columns='id')
         csv_df = csv_df.rename(columns=column_mapping)
         primary_column = list(column_mapping.values())[0]
@@ -34,7 +60,6 @@ def transform_csv(csv, tipo):
         csv_df['Classificação'] = csv_df['Classificação'].str.upper().str.strip()
         df_melted = pd.melt(csv_df, id_vars=id_vars, var_name='Ano', value_name='Quantidade')
         df_melted['Ano'] = df_melted['Ano'].astype(int)
-        # Substituir valores não numéricos por zero antes de converter para inteiro
         df_melted['Quantidade'] = pd.to_numeric(df_melted['Quantidade'], errors='coerce').fillna(0).astype(int)
         return df_melted
 
