@@ -125,7 +125,7 @@ Na implementação atual, o arquivo `auth.py` contém um dicionário que simula 
 
 
 
-#### Modelo para sequências de fases 
+#### Modelo para sequências de fases com deploy na AWS
 ![entrega-da-primeira-fase-tech-chalenge-ML](https://github.com/AlineAreda/vitibrasil_embrapa_api/assets/77371831/cefcf939-f0b9-4620-85ce-a1403b6335dc)
 
 
