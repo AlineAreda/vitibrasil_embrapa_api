@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
-from app.auth import authenticate_user, create_access_token, get_current_active_user, fake_users_db, ACCESS_TOKEN_EXPIRE_MINUTES
+from app.auth import authenticate_user, create_access_token, get_current_active_user, users_db, ACCESS_TOKEN_EXPIRE_MINUTES
 from app.routes.routes import router
 
 tags_metadata = [
@@ -57,7 +57,7 @@ def root():
         description='Gera um token JWT para autenticação'
         )
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+    user = authenticate_user(users_db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -77,7 +77,12 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 async def read_users_me(current_user = Depends(get_current_active_user)):
     return current_user
 
+
+
 app.include_router(router, prefix="/vitibrasil/api/v1" )
+
+
+
 
 if __name__ == "__main__":
     import uvicorn
