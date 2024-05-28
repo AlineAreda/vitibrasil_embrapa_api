@@ -7,7 +7,7 @@ from app.routes.routes import router
 tags_metadata = [
     {
         "name": "Auth",
-        "description": "Endpoints relacionados à autenticação",
+        "description": "Endpoints relacionados à autenticação de usuários na API.",
     },
     {
         "name": "Produção",
@@ -46,7 +46,7 @@ app = FastAPI(
         response_model=dict, 
         tags=["Página Inicial"], 
         summary='Página Inicial', 
-        description='Página Inicial')
+        description='Health-check da API')
 def root():
     return {"message": "Banco de dados de uva, vinho e derivados"}
 
@@ -61,7 +61,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="Credenciais de acesso inválidas",
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -72,7 +72,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 
 @app.get("/users/me", response_model=dict, 
         tags=["Auth"], 
-        summary='Obter informações do usuário autenticado', 
+        summary='Informações do usuário autenticado', 
         description='Retorna as informações do usuário baseado no token JWT')
 async def read_users_me(current_user = Depends(get_current_active_user)):
     return current_user
