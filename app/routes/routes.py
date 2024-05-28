@@ -87,8 +87,7 @@ async def get_comercializacao_data(start_year: int = 1970, end_year: int = 2023,
 )
     return get_data(ComercializacaoScraper, start_year, end_year)
 
-@router.get("/importacao"
-, 
+@router.get("/importacao", 
         tags=["Importação"], 
         summary='Obter dados de Importação', 
         description='Retorna os dados de Importação de um intervalo de anos especificado e de forma opcional com as opções no site.')
