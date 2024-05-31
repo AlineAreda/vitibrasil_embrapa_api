@@ -55,7 +55,7 @@ ALGORITHM=HS256
 ```bash
 uvicorn app.main:app --reload
 ```
-Acesse a documentação da API no navegador: http://localhost:8000/docs
+Acesse a documentação da API no navegador: http://localhost:8000/docs ou http://127.0.0.1:8000/docs
 
 ### Pré-requisitos
 -   Python 3.9 ou superior
